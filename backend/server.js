@@ -12,11 +12,12 @@ app.use(
 );
 
 const pool = new Pool({
-  user: process.env.POSTGRES_USER || "your_postgres_user",
-  host: process.env.POSTGRES_HOST || "postgres",
-  database: process.env.POSTGRES_DB || "your_database_name",
-  password: process.env.POSTGRES_PASSWORD || "your_postgres_password",
-  port: process.env.POSTGRES_PORT || 5432,
+  // user: process.env.POSTGRES_USER || "user",
+  // host: process.env.POSTGRES_HOST || "postgres",
+  // database: process.env.POSTGRES_DB || "mydb",
+  // password: process.env.POSTGRES_PASSWORD || "password",
+  // port: process.env.POSTGRES_PORT || 5432,
+  connectionString: process.env.DATABASE_URL,
 });
 
 app.use(bodyParser.json());
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 (async () => {
   const pool = new Pool({
     // ... your connection details
+    connectionString: process.env.DATABASE_URL,
   });
 
   try {
