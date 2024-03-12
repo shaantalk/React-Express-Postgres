@@ -1,35 +1,39 @@
-version: '3'
+version: '3.8'
 
 services:
-  postgres:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=your_postgres_user
-      - POSTGRES_PASSWORD=your_postgres_password
-      - POSTGRES_DB=your_database_name
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "5432:5432"
+      - "80:80"  
+      - "443:443"  
+    restart: unless-stopped
+    depends_on:
+      - backend   
 
   backend:
-    build: ./backend
-    restart: always
-    ports:
-      - "3001:3001"
-    volumes:
-      - ./backend:/usr/src/app
-    depends_on:
-      - postgres
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     environment:
-      - PGHOST=postgres
-      - PGUSER=your_postgres_user
-      - PGPASSWORD=your_postgres_password
-      - PGDATABASE=your_database_name
+      - DATABASE_URL=postgres://user:password@db:5432/mydb
+      - NODE_ENV=production
+    restart: unless-stopped
+    depends_on:
+      - db
 
-  frontend:
-    build: ./frontend
-    restart: always
+  db:
+    image: postgres:13
     ports:
-      - "3000:3000"
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydb
     volumes:
-      - ./frontend:/usr/src/app
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
